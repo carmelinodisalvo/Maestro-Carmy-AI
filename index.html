@@ -16,6 +16,7 @@
   <link rel="apple-touch-icon" href="icona-192.png">
 
   <style>
+    * { box-sizing: border-box; }
     html, body {
       margin: 0;
       padding: 0;
@@ -24,6 +25,39 @@
       overflow: hidden;
       background-color: #eef3f8;
       font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    /* Banner installazione in alto */
+    #pwa-install-banner {
+      display: none; /* Nascosto di default, appare solo se installabile */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: #315c9b;
+      color: #ffffff;
+      padding: 10px 15px;
+      z-index: 9999;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    #pwa-install-banner span {
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    #pwa-install-banner button {
+      background: #ffffff;
+      color: #315c9b;
+      border: none;
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
     }
 
     iframe {
@@ -36,17 +70,70 @@
 </head>
 <body>
 
+  <!-- Banner fisso di riserva per l'installazione -->
+  <div id="pwa-install-banner">
+    <span>📱 Installa <b>Maestro Carmy AI</b> sul tuo dispositivo!</span>
+    <button onclick="installaPWA()">Installa ora</button>
+  </div>
+
   <!-- Web App Apps Script incorporata -->
-  <iframe src="https://script.google.com/macros/s/AKfycbxNwkngAAOH5uMomes5hltSS8tUcdk1mZ7qQEJVXAbq_Bq-5dIDm7tnSIwVX_n7W0s/exec" allow="clipboard-write"></iframe>
+  <iframe src="https://script.google.com/macros/s/AKfycbxNwkngAAOH5uMomes5hltSS8tUcdk1mZ7qQEJVXAbq_Bq-5dIDm7tnSIwVX_n7W0s/exec"></iframe>
 
   <script>
-    // Registrazione Service Worker
+    let eventoInstallazione = null;
+    const banner = document.getElementById('pwa-install-banner');
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // 1. Registrazione Service Worker per abilitare il popup PWA
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('PWA Service Worker registrato con successo!'))
+          .then(() => console.log('PWA Service Worker attivo'))
           .catch(err => console.log('Errore SW:', err));
       });
+    }
+
+    // 2. Intercetta l'evento del POPUP AUTOMATICO di Android / PC
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Memorizza l'evento
+      eventoInstallazione = e;
+      
+      // Mostra comunque il banner in alto per facilitare l'utente
+      banner.style.display = 'flex';
+      
+      // Prova a mostrare subito il popup automatico di sistema
+      setTimeout(() => {
+        if (eventoInstallazione) {
+          eventoInstallazione.prompt();
+        }
+      }, 1000);
+    });
+
+    // 3. Gestione speciale per iPhone/iPad (Safari)
+    if (isIOS && !window.navigator.standalone) {
+      banner.style.display = 'flex';
+    }
+
+    // 4. Funzione richiamata al click sul pulsante "Installa ora"
+    function installaPWA() {
+      if (eventoInstallazione) {
+        // Apri il popup automatico di installazione
+        eventoInstallazione.prompt();
+        eventoInstallazione.userChoice.then((scelta) => {
+          if (scelta.outcome === 'accepted') {
+            banner.style.display = 'none';
+          }
+          eventoInstallazione = null;
+        });
+      } else if (isIOS) {
+        // Istruzioni guidate per iOS
+        alert("Per installare l'app su iPhone/iPad:\n\n1. Tocca il tasto Condividi ⎋ in Safari.\n2. Scorri e seleziona 'Aggiungi alla schermata Home'.");
+      }
+    }
+
+    // Nascondi il banner se l'app è già stata aperta da icona Home (standalone)
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      banner.style.display = 'none';
     }
   </script>
 </body>
