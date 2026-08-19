@@ -4,12 +4,12 @@
   "description": "Assistente IA per la creazione di schede didattiche per la scuola primaria.",
   "icons": [
     {
-      "src": "icona-192.png",
+      "src": "icon-192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "icona-512.png",
+      "src": "icon-512.png",
       "type": "image/png",
       "sizes": "512x512"
     }
