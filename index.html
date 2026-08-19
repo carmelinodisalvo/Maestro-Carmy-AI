@@ -24,40 +24,7 @@
       height: 100%;
       overflow: hidden;
       background-color: #eef3f8;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    /* Banner installazione in alto */
-    #pwa-install-banner {
-      display: none; /* Nascosto di default, appare solo se installabile */
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      background: #315c9b;
-      color: #ffffff;
-      padding: 10px 15px;
-      z-index: 9999;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    #pwa-install-banner span {
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    #pwa-install-banner button {
-      background: #ffffff;
-      color: #315c9b;
-      border: none;
-      padding: 7px 14px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 13px;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     iframe {
@@ -66,25 +33,134 @@
       border: none;
       display: block;
     }
+
+    /* Modal Overlay (Sfondo Sfumato) */
+    .pwa-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+
+    .pwa-overlay.visible {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Card Pop-up Elegante */
+    .pwa-card {
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 28px 24px;
+      max-width: 380px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      position: relative;
+    }
+
+    .pwa-overlay.visible .pwa-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .pwa-icon {
+      width: 80px;
+      height: 80px;
+      border-radius: 18px;
+      margin: 0 auto 16px auto;
+      box-shadow: 0 8px 16px rgba(49, 92, 155, 0.2);
+      display: block;
+      object-fit: cover;
+    }
+
+    .pwa-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e293b;
+      margin: 0 0 8px 0;
+    }
+
+    .pwa-desc {
+      font-size: 14px;
+      color: #64748b;
+      line-height: 1.5;
+      margin: 0 0 24px 0;
+    }
+
+    /* Pulsanti Azione */
+    .pwa-actions {
+      display: flex;
+      gap: 12px;
+      flex-direction: column;
+    }
+
+    .btn-install {
+      background: #315c9b;
+      color: #ffffff;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(49, 92, 155, 0.3);
+      transition: background 0.2s;
+    }
+
+    .btn-install:active {
+      background: #244677;
+    }
+
+    .btn-close {
+      background: transparent;
+      color: #94a3b8;
+      border: none;
+      padding: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Banner fisso di riserva per l'installazione -->
-  <div id="pwa-install-banner">
-    <span>📱 Installa <b>Maestro Carmy AI</b> sul tuo dispositivo!</span>
-    <button onclick="installaPWA()">Installa ora</button>
-  </div>
-
   <!-- Web App Apps Script incorporata -->
   <iframe src="https://script.google.com/macros/s/AKfycbxNwkngAAOH5uMomes5hltSS8tUcdk1mZ7qQEJVXAbq_Bq-5dIDm7tnSIwVX_n7W0s/exec"></iframe>
 
+  <!-- Pop-up Elegante Modal -->
+  <div id="pwaModal" class="pwa-overlay">
+    <div class="pwa-card">
+      <img src="icona-192.png" alt="Logo Maestro Carmy AI" class="pwa-icon">
+      <h3 class="pwa-title">Installa Maestro Carmy AI</h3>
+      <p class="pwa-desc">Aggiungi l'app sulla tua schermata Home per accedervi subito a schermo intero come un'applicazione nativa.</p>
+      
+      <div class="pwa-actions">
+        <button class="btn-install" onclick="installaPWA()">📱 Installa ora</button>
+        <button class="btn-close" onclick="chiudiModal()">Continua sul Web</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     let eventoInstallazione = null;
-    const banner = document.getElementById('pwa-install-banner');
+    const modal = document.getElementById('pwaModal');
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
-    // 1. Registrazione Service Worker per abilitare il popup PWA
+    // 1. Registrazione Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
@@ -93,47 +169,51 @@
       });
     }
 
-    // 2. Intercetta l'evento del POPUP AUTOMATICO di Android / PC
+    // 2. Intercetta il prompt di installazione Android / PC
     window.addEventListener('beforeinstallprompt', (e) => {
-      // Memorizza l'evento
+      e.preventDefault();
       eventoInstallazione = e;
       
-      // Mostra comunque il banner in alto per facilitare l'utente
-      banner.style.display = 'flex';
-      
-      // Prova a mostrare subito il popup automatico di sistema
+      // Mostra il pop-up elegante dopo 1.5 secondi di permanenza
       setTimeout(() => {
-        if (eventoInstallazione) {
-          eventoInstallazione.prompt();
-        }
-      }, 1000);
+        mostraModal();
+      }, 1500);
     });
 
-    // 3. Gestione speciale per iPhone/iPad (Safari)
+    // 3. Gestione iOS (Safari)
     if (isIOS && !window.navigator.standalone) {
-      banner.style.display = 'flex';
+      setTimeout(() => {
+        mostraModal();
+      }, 1500);
     }
 
-    // 4. Funzione richiamata al click sul pulsante "Installa ora"
+    function mostraModal() {
+      // Non mostrare se l'utente è già in modalità App o se ha chiuso il messaggio recentemente
+      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
+      if (sessionStorage.getItem('pwaModalChiuso')) return;
+
+      modal.classList.add('visible');
+    }
+
+    function chiudiModal() {
+      modal.classList.remove('visible');
+      // Ricorda la chiusura per tutta la sessione di navigazione corrente
+      sessionStorage.setItem('pwaModalChiuso', 'true');
+    }
+
     function installaPWA() {
       if (eventoInstallazione) {
-        // Apri il popup automatico di installazione
         eventoInstallazione.prompt();
         eventoInstallazione.userChoice.then((scelta) => {
           if (scelta.outcome === 'accepted') {
-            banner.style.display = 'none';
+            chiudiModal();
           }
           eventoInstallazione = null;
         });
       } else if (isIOS) {
-        // Istruzioni guidate per iOS
-        alert("Per installare l'app su iPhone/iPad:\n\n1. Tocca il tasto Condividi ⎋ in Safari.\n2. Scorri e seleziona 'Aggiungi alla schermata Home'.");
+        alert("Per installare l'app su iPhone/iPad:\n\n1. Tocca il tasto Condividi ⎋ in basso su Safari.\n2. Scorri e seleziona 'Aggiungi alla schermata Home'.");
+        chiudiModal();
       }
-    }
-
-    // Nascondi il banner se l'app è già stata aperta da icona Home (standalone)
-    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
-      banner.style.display = 'none';
     }
   </script>
 </body>
