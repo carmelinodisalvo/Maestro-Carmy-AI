@@ -34,7 +34,33 @@
       display: block;
     }
 
-    /* Modal Overlay (Sfondo Sfumato) */
+    /* Pulsante Menu Fluttuante in alto a destra */
+    .menu-btn-trigger {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 9999;
+      background: #315c9b;
+      color: #ffffff;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
+
+    .menu-btn-trigger:active {
+      transform: scale(0.92);
+      background: #244677;
+    }
+
+    /* Modali Overlay (Sfondo Sfumato) */
     .pwa-overlay {
       position: fixed;
       top: 0;
@@ -59,13 +85,15 @@
       visibility: visible;
     }
 
-    /* Card Pop-up Elegante */
+    /* Card Pop-up */
     .pwa-card {
       background: #ffffff;
       border-radius: 24px;
-      padding: 28px 24px;
+      padding: 24px;
       max-width: 380px;
       width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
       text-align: center;
       box-shadow: 0 20px 40px rgba(0,0,0,0.25);
       transform: translateY(20px) scale(0.95);
@@ -78,11 +106,11 @@
     }
 
     .pwa-icon {
-      width: 80px;
-      height: 80px;
+      width: 70px;
+      height: 70px;
       border-radius: 18px;
-      margin: 0 auto 16px auto;
-      box-shadow: 0 8px 16px rgba(49, 92, 155, 0.2);
+      margin: 0 auto 12px auto;
+      box-shadow: 0 6px 14px rgba(49, 92, 155, 0.2);
       display: block;
       object-fit: cover;
     }
@@ -91,20 +119,54 @@
       font-size: 20px;
       font-weight: 700;
       color: #1e293b;
-      margin: 0 0 8px 0;
+      margin: 0 0 6px 0;
     }
 
     .pwa-desc {
-      font-size: 14px;
+      font-size: 13px;
       color: #64748b;
-      line-height: 1.5;
-      margin: 0 0 24px 0;
+      line-height: 1.4;
+      margin: 0 0 18px 0;
+    }
+
+    /* Lista link del menù */
+    .menu-links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      text-align: left;
+      margin-bottom: 16px;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      color: #1e293b;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s, border-color 0.2s;
+      cursor: pointer;
+    }
+
+    .menu-item:hover, .menu-item:active {
+      background: #edf2f7;
+      border-color: #cbd5e1;
+    }
+
+    .menu-item-icon {
+      font-size: 18px;
     }
 
     /* Pulsanti Azione */
     .pwa-actions {
       display: flex;
-      gap: 12px;
+      gap: 8px;
       flex-direction: column;
     }
 
@@ -112,52 +174,127 @@
       background: #315c9b;
       color: #ffffff;
       border: none;
-      padding: 14px;
-      border-radius: 14px;
-      font-size: 15px;
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(49, 92, 155, 0.3);
-      transition: background 0.2s;
-    }
-
-    .btn-install:active {
-      background: #244677;
     }
 
     .btn-close {
       background: transparent;
       color: #94a3b8;
       border: none;
-      padding: 10px;
-      font-size: 14px;
+      padding: 8px;
+      font-size: 13px;
       font-weight: 500;
       cursor: pointer;
+    }
+
+    /* Testo per le Info e Istruzioni */
+    .info-content {
+      text-align: left;
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    .info-content h4 {
+      margin: 12px 0 4px 0;
+      color: #315c9b;
     }
   </style>
 </head>
 <body>
 
-  <!-- Web App Apps Script incorporata -->
-  <iframe src="https://script.google.com/macros/s/AKfycbxNwkngAAOH5uMomes5hltSS8tUcdk1mZ7qQEJVXAbq_Bq-5dIDm7tnSIwVX_n7W0s/exec"></iframe>
+  <!-- Pulsante Menù Fisso -->
+  <button class="menu-btn-trigger" onclick="apriMenu()" title="Menù e Link">☰</button>
 
-  <!-- Pop-up Elegante Modal -->
-  <div id="pwaModal" class="pwa-overlay">
+  <!-- Web App Apps Script incorporata -->
+  <iframe src="https://script.google.com/macros/s/AKfycbxNwkngAAOH5uMomes5hltSS8tUcdk1mZ7qQEJVXAbq_Bq-5dIDm7tnSIwVX_n7W0s/exec" allow="clipboard-write"></iframe>
+
+  <!-- POP-UP 1: MODALE MENÙ / RISORSE -->
+  <div id="menuModal" class="pwa-overlay">
     <div class="pwa-card">
       <img src="icon-192.png" alt="Logo Maestro Carmy AI" class="pwa-icon">
-      <h3 class="pwa-title">Installa Maestro Carmy AI</h3>
-      <p class="pwa-desc">Aggiungi l'app sulla tua schermata Home per accedervi subito a schermo intero come un'applicazione nativa.</p>
+      <h3 class="pwa-title">Maestro Carmy Hub</h3>
+      <p class="pwa-desc">Risorse didattiche, canali ufficiali e strumenti per la scuola.</p>
       
+      <div class="menu-links-list">
+        <!-- 1. Info e Istruzioni (Apre il pop-up interno) -->
+        <div class="menu-item" onclick="apriInfo()">
+          <span class="menu-item-icon">ℹ️</span>
+          <span>Info e istruzioni</span>
+        </div>
+
+        <!-- 2. Pagina Facebook -->
+        <a href="https://www.facebook.com/profile.php?id=61592679823197" target="_blank" rel="noopener" class="menu-item">
+          <span class="menu-item-icon">📘</span>
+          <span>Pagina Facebook Maestro Carmelo</span>
+        </a>
+
+        <!-- 3. Canale Telegram -->
+        <a href="https://t.me/NOME_CANALE" target="_blank" rel="noopener" class="menu-item">
+          <span class="menu-item-icon">✈️</span>
+          <span>Canale Telegram</span>
+        </a>
+
+        <!-- 4. Blog Bianco Sul Nero -->
+        <a href="https://biancosulnero.blogspot.com/" target="_blank" rel="noopener" class="menu-item">
+          <span class="menu-item-icon">✍️</span>
+          <span>Blog: Bianco Sul Nero</span>
+        </a>
+
+        <!-- 5. Sito Guide Didattiche Gratis -->
+        <a href="https://www.guidedidattichegratis.it/" target="_blank" rel="noopener" class="menu-item">
+          <span class="menu-item-icon">📚</span>
+          <span>Sito: Guide didattiche gratis</span>
+        </a>
+      </div>
+
       <div class="pwa-actions">
-        <button class="btn-install" onclick="installaPWA()">📱 Installa ora</button>
-        <button class="btn-close" onclick="chiudiModal()">Continua sul Web</button>
+        <button class="btn-install" id="btnInstallMenu" onclick="installaPWA()" style="display:none;">📱 Installa l'App</button>
+        <button class="btn-close" onclick="chiudiModale('menuModal')">Chiudi</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- POP-UP 2: MODALE INFO E ISTRUZIONI -->
+  <div id="infoModal" class="pwa-overlay">
+    <div class="pwa-card">
+      <h3 class="pwa-title">Info & Istruzioni</h3>
+      
+      <div class="info-content">
+        <h4>💡 Cos'è Maestro Carmy AI?</h4>
+        <p>
+          È un assistente didattico basato sull'Intelligenza Artificiale progettato per aiutare a generare schede didattiche in pochissimi clic.
+          Con Maestro Carmy AI è possibile creare in modo semplice e veloce schede didattiche personalizzate, scegliendo classe, disciplina e argomento. Le attività possono essere organizzate con esercizi graduati e pensati per accompagnare gli alunni nel percorso di apprendimento.
+          Tra le funzioni disponibili c’è anche la possibilità di scegliere se creare le schede utilizzando il carattere maiuscolo o il minuscolo. Una funzione pensata in particolare per permettere al docente di adattare rapidamente il materiale alle diverse esigenze della classe e degli alunni.
+          Le schede generate da Carmy AI non sono volutamente ricche di immagini, decorazioni o stimoli grafici. Non si tratta di una limitazione, ma di una scelta pedagogica precisa. Una pagina eccessivamente ricca di elementi visivi può infatti attirare continuamente l’attenzione del bambino su aspetti secondari, rendendo più difficile concentrarsi sull’attività e sulle consegne.
+          © 2026 Maestro Carmy AI | Bianco sul Nero. Tutti i diritti riservati.
+          
+        
+        
+        
+        
+        
+        </p>
+        
+      
+      </div>
+
+      <div class="pwa-actions" style="margin-top:16px;">
+        <button class="btn-install" onclick="tornaAlMenu()">⬅️ Torna al Menù</button>
       </div>
     </div>
   </div>
 
   <script>
     let eventoInstallazione = null;
-    const modal = document.getElementById('pwaModal');
+    const menuModal = document.getElementById('menuModal');
+    const infoModal = document.getElementById('infoModal');
+    const btnInstallMenu = document.getElementById('btnInstallMenu');
     const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
     // 1. Registrazione Service Worker
@@ -169,36 +306,42 @@
       });
     }
 
-    // 2. Intercetta il prompt di installazione Android / PC
+    // 2. Intercetta evento di installazione
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       eventoInstallazione = e;
+      btnInstallMenu.style.display = 'block'; // Mostra il tasto di installazione nel menù
       
-      // Mostra il pop-up elegante dopo 1.5 secondi di permanenza
+      // Apri automaticamente il menù la prima volta dopo 2 secondi
       setTimeout(() => {
-        mostraModal();
-      }, 1500);
+        if (!sessionStorage.getItem('menuGiaMostrato')) {
+          apriMenu();
+        }
+      }, 2000);
     });
 
-    // 3. Gestione iOS (Safari)
     if (isIOS && !window.navigator.standalone) {
-      setTimeout(() => {
-        mostraModal();
-      }, 1500);
+      btnInstallMenu.style.display = 'block';
     }
 
-    function mostraModal() {
-      // Non mostrare se l'utente è già in modalità App o se ha chiuso il messaggio recentemente
-      if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
-      if (sessionStorage.getItem('pwaModalChiuso')) return;
-
-      modal.classList.add('visible');
+    // Funzioni di navigazione Modali
+    function apriMenu() {
+      menuModal.classList.add('visible');
+      sessionStorage.setItem('menuGiaMostrato', 'true');
     }
 
-    function chiudiModal() {
-      modal.classList.remove('visible');
-      // Ricorda la chiusura per tutta la sessione di navigazione corrente
-      sessionStorage.setItem('pwaModalChiuso', 'true');
+    function apriInfo() {
+      menuModal.classList.remove('visible');
+      infoModal.classList.add('visible');
+    }
+
+    function tornaAlMenu() {
+      infoModal.classList.remove('visible');
+      menuModal.classList.add('visible');
+    }
+
+    function chiudiModale(id) {
+      document.getElementById(id).classList.remove('visible');
     }
 
     function installaPWA() {
@@ -206,13 +349,13 @@
         eventoInstallazione.prompt();
         eventoInstallazione.userChoice.then((scelta) => {
           if (scelta.outcome === 'accepted') {
-            chiudiModal();
+            chiudiModale('menuModal');
           }
           eventoInstallazione = null;
         });
       } else if (isIOS) {
         alert("Per installare l'app su iPhone/iPad:\n\n1. Tocca il tasto Condividi ⎋ in basso su Safari.\n2. Scorri e seleziona 'Aggiungi alla schermata Home'.");
-        chiudiModal();
+        chiudiModale('menuModal');
       }
     }
   </script>
