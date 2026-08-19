@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Maestro Carmy AI</title>
+
+  <!-- PWA Manifest & Colori -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#315c9b">
+
+  <!-- iOS / Apple Safari -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Maestro Carmy">
+  <link rel="apple-touch-icon" href="icona-192.png">
+
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #eef3f8;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Web App Apps Script incorporata -->
+  <iframe src="https://script.google.com/macros/s/AKfycbxNwkngAAOH5uMomes5hltSS8tUcdk1mZ7qQEJVXAbq_Bq-5dIDm7tnSIwVX_n7W0s/exec" allow="clipboard-write"></iframe>
+
+  <script>
+    // Registrazione Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('PWA Service Worker registrato con successo!'))
+          .catch(err => console.log('Errore SW:', err));
+      });
+    }
+  </script>
+</body>
+</html>
