@@ -205,6 +205,17 @@
       color: #315c9b;
     }
   </style>
+  <!-- Google Analytics GA4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2HQ9X4HHJ5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2HQ9X4HHJ5');
+
+    
+  </script>
 </head>
 <body>
 
@@ -352,6 +363,26 @@
         chiudiModale('menuModal');
       }
     }
+    // Registra l'evento quando l'utente completa l'installazione
+    window.addEventListener('appinstalled', () => {
+      if (typeof gtag === 'function') {
+        gtag('event', 'pwa_install_success', {
+          'event_category': 'PWA',
+          'event_label': 'App Installata con successo'
+        });
+      }
+    });
+
+    // Registra quando l'app viene aperta dalla schermata Home
+    window.addEventListener('DOMContentLoaded', () => {
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      if (isStandalone && typeof gtag === 'function') {
+        gtag('event', 'pwa_open_standalone', {
+          'event_category': 'PWA',
+          'event_label': 'Apertura da Schermata Home'
+        });
+      }
+    });
   </script>
 </body>
 </html>
